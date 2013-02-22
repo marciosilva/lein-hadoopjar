@@ -1,6 +1,6 @@
 # lein-hadoopjar
 
-A Leiningen plugin to do many wonderful things.
+A Leiningen plugin to build hadoop job jars.  Only works with lein2.
 
 ## Usage
 
