@@ -6,9 +6,16 @@
             [cemerick.pomegranate.aether :as aether])
   (:use [leiningen.pom :only [make-pom make-pom-properties]]
         [leiningen.jar :only [write-jar]]
-        [clojure.java.io :only [file]]))
+        [clojure.java.io :only [file]])
+  (:import [java.io RandomAccessFile]))
 
 
+(defn- get-bytes [^java.io.File file]
+  (let [randomfile (RandomAccessFile. file "r")
+        length     (.length randomfile)
+	buff       (byte-array length)]
+	(.readFully randomfile buff)
+	buff))
 
 (defn- base-spec [project]
   (concat [{:type :bytes
@@ -34,7 +41,7 @@
 (defn deps-spec [project]
   "Constructs a filespec containing all dependencies prefixed by lib/"
   (let [deps (classpath/resolve-dependencies :dependencies project)
-        filespecs (map (fn [d] {:type :bytes :path (str "lib/" (.getName d)) :bytes (slurp d)})
+        filespecs (map (fn [d] {:type :bytes :path (str "lib/" (.getName d)) :bytes (get-bytes d)})
                        deps)]
        filespecs))
 
